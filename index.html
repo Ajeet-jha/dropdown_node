@@ -1,31 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>First Api</title>
 </head>
+
 <body>
-    <select name="country-list" id="country-list">
-        <option value="-1">Select from list</option>
-    </select>
+    <div style="text-align: center;">
+        <input type="text" id="selected-country" value="Please select any Country from drop down !" disabled
+            style="width:17%; padding: 12px; text-align: center;" />
+        <div style="margin-top: 10px;">
+            <select name="country-list" id="country-list" style="padding: 12px;">
+                <option value="-1">Select from the list</option>
+            </select>
+        </div>
+    </div>
 
     <script>
         const dropDown = document.querySelector("#country-list");
-        fetch("http://localhost:4001/v1/countrylist")
-        .then(data => data.json())
-        .then(res => generateDropDown(res));
+        const selectedCountry = document.querySelector("#selected-country");
 
-        function generateDropDown (lists){
-            const Options =  lists.map((list,index)=>{
+        fetch("http://localhost:4001/v1/countrylist")
+            .then(data => data.json())
+            .then(res => generateDropDown(res));
+
+        function generateDropDown(lists) {
+            const Options = lists.map((list, index) => {
                 var option = document.createElement("option");
                 option.value = list.code;
-                option.innerText =list.name;
+                option.innerText = list.name;
                 return dropDown.appendChild(option);
-            })    
-        return Options;
+            })
+            return Options;
         }
 
+        dropDown.addEventListener("change", e => {
+            selectedCountry.value = "Loading ..";
+            const listVal = dropDown[e.target.selectedIndex].innerText
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                setTimeout(() => {
+                    selectedCountry.value = "Still Loading .. ";
+                    if (this.readyState == 4 && this.status == 200) {
+                        setTimeout(() => {
+                            selectedCountry.value = `You have selected ${this.responseText}`;
+                        }, 500);
+                    }
+                }, 400);
+            };
+            xhttp.open("GET", `http://localhost:4001/ajax?data=${listVal}`, true);
+            xhttp.send();
+        })
     </script>
 </body>
+
 </html>
