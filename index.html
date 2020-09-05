@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First Api</title>
+</head>
+<body>
+    <select name="country-list" id="country-list">
+        <option value="-1">Select from list</option>
+    </select>
+
+    <script>
+        const dropDown = document.querySelector("#country-list");
+        fetch("http://localhost:4001/v1/countrylist")
+        .then(data => data.json())
+        .then(res => generateDropDown(res));
+
+        function generateDropDown (lists){
+            const Options =  lists.map((list,index)=>{
+                var option = document.createElement("option");
+                option.value = list.code;
+                option.innerText =list.name;
+                return dropDown.appendChild(option);
+            })    
+        return Options;
+        }
+
+    </script>
+</body>
+</html>
